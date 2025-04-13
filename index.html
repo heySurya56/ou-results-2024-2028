@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osmania University Result Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .roll-input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .result-item {
+            margin: 10px 0;
+        }
+        .result-item strong {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Osmania University Result Checker</h1>
+    <div class="form-container">
+        <h2>Enter Roll Numbers</h2>
+        <form id="rollForm">
+            <label for="rollNumber">Roll Number (12 Numbers)</label>
+            <input type="text" id="rollNumber" class="roll-input" placeholder="Enter Roll Number" required>
+            <button type="submit" class="btn">Get Results</button>
+        </form>
+    </div>
+
+    <div id="results" class="results" style="display: none;">
+        <h2>Results</h2>
+        <div id="resultList"></div>
+    </div>
+
+    <script>
+        document.getElementById('rollForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            let rollNumber = document.getElementById('rollNumber').value.trim();
+            if (rollNumber.length === 12) {
+                fetchResults(rollNumber);
+            } else {
+                alert('Please enter a valid 12-digit roll number');
+            }
+        });
+
+        function fetchResults(rollNumber) {
+            // Placeholder for the backend API call that fetches results
+            fetch(`http://localhost:5000/get_results/${rollNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayResults(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching results:', error);
+                    alert('Error fetching results. Please try again.');
+                });
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            const resultList = document.getElementById('resultList');
+
+            resultList.innerHTML = ''; // Clear previous results
+            if (data && data.length > 0) {
+                data.forEach(result => {
+                    const resultItem = document.createElement('div');
+                    resultItem.classList.add('result-item');
+                    resultItem.innerHTML = `
+                        <strong>Roll Number:</strong> ${result.rollNumber}<br>
+                        <strong>Status:</strong> ${result.status}<br>
+                        <strong>Marks:</strong> ${result.marks.join(', ')}<br>
+                        <strong>Total Marks:</strong> ${result.totalMarks}
+                    `;
+                    resultList.appendChild(resultItem);
+                });
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.style.display = 'none';
+                alert('No results found');
+            }
+        }
+    </script>
+</body>
+</html>
